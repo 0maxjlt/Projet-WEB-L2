@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="https://d3js.org/d3.v7.min.js"></script>
+      <script src="hexagones_squelette.js"></script>
+     
+
+      <script>
+        var socket = io();
+        console.log("Connexion initialisée avec Socket.io");
+        var pseudo = null
+
+        function entrerDansLaPartie () {
+            socket.emit("entree" , nom.value)
+            console.log(nom.value);      
+        }
+
+        function sortirDeLaPartie () {
+            socket.emit("sortie", pseudo)     
+        }
+         
+        socket.on("VotreNom", nomJoueur => { 
+            var affiche = document.getElementById("VotreNom")
+            affiche.innerText = "Votre pseudo est : " + nomJoueur ;
+            pseudo = nomJoueur
+
+        })
+         
+        socket.on("liste", ListeJoueurs => {
+            var affiche = document.getElementById("nbJ")
+            affiche.innerText = ListeJoueurs ;
+        })
+
+        socket.on("nbJoueurs", nbJoueurs => {
+            var affiche = document.getElementById("nbJoueurs")
+            affiche.innerText = nbJoueurs + " joueur(s)" ;
+        })
+
+        socket.on("JoueursParSocketID", dicoSocketJoueurs => {
+            var affiche = document.getElementById("JoueursParSocketID")
+            console.log(dicoSocketJours)
+        })
+
+
+        
+
+
+      </script>
+  </head>
+  <body>
+
+
+   Quel est votre nom ? :  <input id = "nom" type = " text " />
+   <button type = "button" onClick = "entrerDansLaPartie()"> Entrer dans la partie </button>
+
+    <p id = "VotreNom"> Votre pseudo est : </p>
+    <p id = "nbJoueurs"> 0 joueurs : </p>
+    <p id = "nbJ">  </p>
+    <p id = "JoueursParSocketID"> --- </p>
+
+
+   <br>
+
+   <button type = "button" onClick = "sortirDeLaPartie()"> Sortir de la partie </button>
+   <div>
+      <div id="tablier" style="float:left;">
+      <div style="float:right;">
+      Votre message <input id="message" type="text"/> <br/>
+      <textarea id="messages" rows="15" cols="20"></textarea>
+      </div>
+      </div>
+
+  </body>
+</html>
