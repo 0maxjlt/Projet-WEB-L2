@@ -77,9 +77,11 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect",() =>{
         
+        const nomJoueur = listeJoueursParSocketID.get(socket.id);
         console.log(socket.id)
         console.log("sortie d'un joueur : ")
         console.log(nomJoueur)
+        
     
         listeJoueursParSocketID.delete(socket.id)
 
@@ -92,6 +94,7 @@ io.on("connection", (socket) => {
             }
             index++
         }
+        
     
 
         io.emit("liste" , ListeJoueurs)
@@ -100,6 +103,18 @@ io.on("connection", (socket) => {
         socket.emit("VotreNom", nomJoueur)
         
     })
+
+    socket.on("message", (message) => {
+        const connecte = listeJoueursParSocketID.get(socket.id);
+        if (connecte != undefined){
+            
+            console.log(`Message reçu de ${listeJoueursParSocketID.get(socket.id)}: ${message}`);
+            io.emit("message", { joueur: listeJoueursParSocketID.get(socket.id), message });
+        }
+        else{
+            console.log("pas connecté");
+        }
+    });
     
 })
 

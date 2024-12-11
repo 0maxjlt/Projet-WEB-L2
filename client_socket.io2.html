@@ -12,64 +12,79 @@
         var pseudo = null
 
         function entrerDansLaPartie () {
-            socket.emit("entree" , nom.value)
-            console.log(nom.value);      
+            socket.emit("entree" , nom.value);
+            console.log(nom.value); 
+
+            // Désactive et grise le bouton
+            var boutonEntrer = document.getElementById("btnEntrer");
+            boutonEntrer.disabled = true;
         }
 
         function sortirDeLaPartie () {
-            socket.emit("sortie", pseudo)     
+            socket.emit("sortie", pseudo);
         }
+
+        function envoyerMessage() {
+            const message = document.getElementById("message").value;
+            if (message.trim() !== "") {
+                socket.emit("message", message);
+                document.getElementById("message").value = "";
+        }
+}
          
         socket.on("VotreNom", nomJoueur => { 
-            var affiche = document.getElementById("VotreNom")
-            affiche.innerText = "Votre pseudo est : " + nomJoueur ;
-            pseudo = nomJoueur
+            var affiche = document.getElementById("VotreNom");
+            affiche.innerText = "Votre pseudo est : " + nomJoueur;
+            pseudo = nomJoueur;
 
-        })
+        });
          
         socket.on("liste", ListeJoueurs => {
-            var affiche = document.getElementById("nbJ")
-            affiche.innerText = ListeJoueurs ;
-        })
+            var affiche = document.getElementById("nbJ");
+            affiche.innerText = ListeJoueurs;
+        });
 
         socket.on("nbJoueurs", nbJoueurs => {
-            var affiche = document.getElementById("nbJoueurs")
-            affiche.innerText = nbJoueurs + " joueur(s)" ;
-        })
+            var affiche = document.getElementById("nbJoueurs");
+            affiche.innerText = nbJoueurs + " joueur(s)";
+        });
 
         socket.on("JoueursParSocketID", dicoSocketJoueurs => {
-            var affiche = document.getElementById("JoueursParSocketID")
-            console.log(dicoSocketJours)
-        })
+            var affiche = document.getElementById("JoueursParSocketID");
+            console.log(dicoSocketJoueurs);
+        });
 
-
-        
-
+        socket.on("message", (data) => {
+            const messageText = `${data.joueur}: ${data.message}`;
+            const messagesArea = document.getElementById("messages");
+            messagesArea.value += messageText + "\n"; 
+            messagesArea.scrollTop = messagesArea.scrollHeight; 
+        });
 
       </script>
   </head>
   <body>
 
+   Quel est votre nom ? :  <input id="nom" type="text" />
+   <button id="btnEntrer" type="button" onClick="entrerDansLaPartie()"> Entrer dans la partie </button>
 
-   Quel est votre nom ? :  <input id = "nom" type = " text " />
-   <button type = "button" onClick = "entrerDansLaPartie()"> Entrer dans la partie </button>
-
-    <p id = "VotreNom"> Votre pseudo est : </p>
-    <p id = "nbJoueurs"> 0 joueurs : </p>
-    <p id = "nbJ">  </p>
-    <p id = "JoueursParSocketID"> --- </p>
-
+    <p id="VotreNom"> Votre pseudo est : </p>
+    <p id="nbJoueurs"> 0 joueurs : </p>
+    <p id="nbJ">  </p>
+    <p id="JoueursParSocketID"> --- </p>
 
    <br>
 
-   <button type = "button" onClick = "sortirDeLaPartie()"> Sortir de la partie </button>
+   <button type="button" onClick="sortirDeLaPartie()"> Sortir de la partie </button>
    <div>
-      <div id="tablier" style="float:left;">
-      <div style="float:right;">
-      Votre message <input id="message" type="text"/> <br/>
-      <textarea id="messages" rows="15" cols="20"></textarea>
-      </div>
-      </div>
+    <div id="tablier" style="float:left;">
+    </div>
+    <div style="display: flex; align-items: center; width: 300px;margin-bottom: 5px;">
+        <input id="message" type="text" placeholder="Votre message"  />
+        <button type="button" onClick="envoyerMessage()">Envoyer</button>
+    </div>
+        <textarea id="messages" readonly style="height: 200px; width: 228px; resize: none;"></textarea>
+    
 
   </body>
 </html>
